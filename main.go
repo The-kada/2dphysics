@@ -2,6 +2,8 @@ package main
 
 import (
 	"astro/game"
+	"astro/gameerrors"
+	"errors"
 	"fmt"
 	"log"
 
@@ -19,6 +21,10 @@ func main() {
 
 	game := &game.Game{}
 	if err := ebiten.RunGame(game); err != nil {
+		if errors.Is(err, gameerrors.GameExitedError) {
+			log.Println("Game exited!")
+			return
+		}
 		log.Fatal(err)
 	}
 }
