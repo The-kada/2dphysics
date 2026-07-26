@@ -59,8 +59,13 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		}
 
 		if body.Shape.GetType() == physics.RectangleShape {
-			util.DrawRectangle(body.Shape.(*physics.Rectangle), 0, body.Postion, screen, g.debug)
+			util.DrawPolygon(&body.Shape.(*physics.Rectangle).ConvexPolygon, 0, body.Postion, screen, g.debug)
 		}
+
+		if body.Shape.GetType() == physics.ConvexPolygonShape {
+			util.DrawPolygon(body.Shape.(*physics.ConvexPolygon), 40, body.Postion, screen, g.debug)
+		}
+
 		vector.StrokeLine(screen, float32(anchor[0]), float32(anchor[1]), float32(body.Postion[0]), float32(body.Postion[1]), 2, color.RGBA{51, 255, 51, 1}, true)
 	}
 }
@@ -82,6 +87,11 @@ func (g *Game) handleQuit() error {
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyC) {
 		body := &physics.Body{Postion: physics.Vec2{float64(g.ScreenWidth) / 2, float64(g.ScreenHeight) / 2}, Mass: 2.2, Shape: &physics.Circle{Radius: 100}}
+		g.Bodies = append(g.Bodies, body)
+	}
+
+	if inpututil.IsKeyJustPressed(ebiten.KeyP) {
+		body := &physics.Body{Postion: physics.Vec2{float64(g.ScreenWidth) / 2, float64(g.ScreenHeight) / 2}, Mass: 2.2, Shape: physics.NewPolygon([]physics.Vec2{{0, -50}, {20, 70}, {-70, 70}})}
 		g.Bodies = append(g.Bodies, body)
 	}
 

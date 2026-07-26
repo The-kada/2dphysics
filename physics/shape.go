@@ -8,8 +8,9 @@ import (
 type ShapeType string
 
 const (
-	CircleShape    ShapeType = "circle"
-	RectangleShape ShapeType = "rectangle"
+	CircleShape        ShapeType = "circle"
+	RectangleShape     ShapeType = "rectangle"
+	ConvexPolygonShape ShapeType = "ConvexPolygon"
 )
 
 type shape interface {
@@ -27,18 +28,47 @@ func (c *Circle) GetMommentOfInertia() float64 {
 }
 
 func (c *Circle) UpdateVertices(angle float64, position Vec2) {
-
+	// no-op
 }
 
 func (c *Circle) GetType() ShapeType {
 	return CircleShape
 }
 
-type Rectangle struct {
-	width         float64
-	height        float64
+type ConvexPolygon struct {
 	localVertices []Vec2
 	WorldVertices []Vec2
+}
+
+func NewPolygon(vertices []Vec2) *ConvexPolygon {
+	p := &ConvexPolygon{}
+
+	p.WorldVertices = append(p.WorldVertices, vertices...)
+	p.localVertices = append(p.localVertices, vertices...)
+
+	return p
+}
+
+func (p *ConvexPolygon) GetMommentOfInertia() float64 {
+	// todo
+	return 5000
+}
+
+func (p *ConvexPolygon) UpdateVertices(angle float64, position Vec2) {
+	for i := 0; i < len(p.localVertices); i++ {
+		p.WorldVertices[i] = p.localVertices[i].Rotate(angle)
+		p.WorldVertices[i] = p.WorldVertices[i].Add(&position)
+	}
+}
+
+func (p *ConvexPolygon) GetType() ShapeType {
+	return ConvexPolygonShape
+}
+
+type Rectangle struct {
+	width  float64
+	height float64
+	ConvexPolygon
 }
 
 func NewRectangle(width, height float64) *Rectangle {
@@ -58,13 +88,6 @@ func NewRectangle(width, height float64) *Rectangle {
 	)
 
 	return rectangle
-}
-
-func (rect *Rectangle) UpdateVertices(angle float64, position Vec2) {
-	for i := 0; i < len(rect.localVertices); i++ {
-		rect.WorldVertices[i] = rect.localVertices[i].Rotate(angle)
-		rect.WorldVertices[i] = rect.WorldVertices[i].Add(&position)
-	}
 }
 
 func (rect *Rectangle) Draw(dst *ebiten.Image) {
