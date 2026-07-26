@@ -3,6 +3,7 @@ package game
 import (
 	"astro/gameerrors"
 	"astro/physics"
+	"astro/util"
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -48,20 +49,19 @@ func (g *Game) Update() error {
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	// // sky blue
-	// screen.Fill(color.RGBA{100, 149, 237, 255})
+	screen.Fill(color.RGBA{100, 149, 237, 255})
 	vector.FillCircle(screen, float32(anchor[0]), float32(anchor[1]), 10, color.RGBA{255, 0, 0, 255}, true)
 
 	for _, body := range g.Bodies {
 		if body.Shape.GetType() == physics.CircleShape {
-			if !g.debug {
-				vector.FillCircle(screen, float32(body.Postion[0]), float32(body.Postion[1]), float32(body.Shape.(*physics.Circle).Radius), color.White, true)
-			} else {
-				vector.StrokeCircle(screen, float32(body.Postion[0]), float32(body.Postion[1]), float32(body.Shape.(*physics.Circle).Radius), 2, color.RGBA{51, 255, 51, 1}, true)
-			}
-
-			vector.StrokeLine(screen, float32(anchor[0]), float32(anchor[1]), float32(body.Postion[0]), float32(body.Postion[1]), 2, color.RGBA{51, 255, 51, 1}, true)
+			util.DrawCircle(body.Shape.(*physics.Circle), &body.Postion, screen, g.debug)
 
 		}
+
+		if body.Shape.GetType() == physics.RectangleShape {
+			util.DrawRectangle(body.Shape.(*physics.Rectangle), 0, body.Postion, screen, g.debug)
+		}
+		vector.StrokeLine(screen, float32(anchor[0]), float32(anchor[1]), float32(body.Postion[0]), float32(body.Postion[1]), 2, color.RGBA{51, 255, 51, 1}, true)
 	}
 }
 
@@ -75,7 +75,12 @@ func (g *Game) handleQuit() error {
 		return gameerrors.GameExitedError
 	}
 
-	if inpututil.IsKeyJustPressed(ebiten.KeyA) {
+	if inpututil.IsKeyJustPressed(ebiten.KeyR) {
+		body := &physics.Body{Postion: physics.Vec2{float64(g.ScreenWidth) / 2, float64(g.ScreenHeight) / 2}, Mass: 2.2, Shape: physics.NewRectangle(200, 100)}
+		g.Bodies = append(g.Bodies, body)
+	}
+
+	if inpututil.IsKeyJustPressed(ebiten.KeyC) {
 		body := &physics.Body{Postion: physics.Vec2{float64(g.ScreenWidth) / 2, float64(g.ScreenHeight) / 2}, Mass: 2.2, Shape: &physics.Circle{Radius: 100}}
 		g.Bodies = append(g.Bodies, body)
 	}
