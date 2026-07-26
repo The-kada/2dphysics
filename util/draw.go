@@ -1,4 +1,4 @@
-// Package Util is a catch all to help me draw geometry without coupling to render system
+// package util is a catch all to help me draw geometry without coupling to render system
 package util
 
 import (
