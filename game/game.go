@@ -12,8 +12,8 @@ import (
 )
 
 type Game struct {
-	Img          *ebiten.Image
 	Bodies       []*physics.Body
+	contacts     []*physics.ContactInfo
 	ScreenWidth  int
 	ScreenHeight int
 	debug        bool
@@ -27,31 +27,22 @@ func (g *Game) Update() error {
 		return err
 	}
 
-	for _, body := range g.Bodies {
-		weight := physics.Vec2{0, body.Mass * physics.G * physics.PixelPerMeter}
-		wind := physics.Vec2{10 * physics.PixelPerMeter, 0}
+	mouseX, mouseY := ebiten.CursorPosition()
+	g.Bodies[0].Postion[0] = float64(mouseX)
+	g.Bodies[0].Postion[1] = float64(mouseY)
 
-		body.Forces = body.Forces.Add(&weight)
-		body.Forces = body.Forces.Add(physics.GenerateSpringForce(body, anchor, 10, 546))
-		body.Forces = body.Forces.Add(&wind)
-
-		body.Forces = body.Forces.Add(&wind)
-
-		body.CalculateAcceleration()
-		body.IntegrateAcceleration(ebiten.ActualTPS())
-		body.IntegratePosition(ebiten.ActualTPS())
-
-		// zero forces
-		body.Forces[0], body.Forces[1] = 0, 0
+	for i := 0; i < len(g.Bodies); i++ {
+		for j := i + 1; j < len(g.Bodies); j++ {
+			if colliding, contact := physics.IsColliding(g.Bodies[i], g.Bodies[j]); colliding {
+				g.contacts = append(g.contacts, contact)
+			}
+		}
 	}
+
 	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	// // sky blue
-	screen.Fill(color.RGBA{100, 149, 237, 255})
-	vector.FillCircle(screen, float32(anchor[0]), float32(anchor[1]), 10, color.RGBA{255, 0, 0, 255}, true)
-
 	for _, body := range g.Bodies {
 		if body.Shape.GetType() == physics.CircleShape {
 			util.DrawCircle(body.Shape.(*physics.Circle), &body.Postion, screen, g.debug)
@@ -68,6 +59,14 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 		vector.StrokeLine(screen, float32(anchor[0]), float32(anchor[1]), float32(body.Postion[0]), float32(body.Postion[1]), 2, color.RGBA{51, 255, 51, 1}, true)
 	}
+
+	if g.debug {
+		for _, contact := range g.contacts {
+			util.HighlightCollision(screen, contact)
+		}
+		g.contacts = make([]*physics.ContactInfo, 0, 0)
+	}
+
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {

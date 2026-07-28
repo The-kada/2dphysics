@@ -6,7 +6,6 @@ import (
 	"astro/physics"
 	"errors"
 	"fmt"
-	"image/color"
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -21,20 +20,24 @@ func main() {
 	ebiten.SetWindowSize(screenWidth, screenHeight)
 	ebiten.SetWindowTitle(fmt.Sprintf("Astro %dx%d", screenWidth, screenHeight))
 
-	img := ebiten.NewImage(500, 500)
-	img.Fill(color.White)
-
-	game := &game.Game{
-		Img:          img,
-		Bodies:       make([]*physics.Body, 0),
-		ScreenWidth:  screenWidth,
-		ScreenHeight: screenHeight,
-	}
-	if err := ebiten.RunGame(game); err != nil {
+	if err := ebiten.RunGame(NewGame()); err != nil {
 		if errors.Is(err, gameerrors.GameExitedError) {
 			log.Println("Game exited!")
 			return
 		}
 		log.Fatal(err)
 	}
+}
+
+func NewGame() *game.Game {
+	game := &game.Game{
+		Bodies:       make([]*physics.Body, 0),
+		ScreenWidth:  screenWidth,
+		ScreenHeight: screenHeight,
+	}
+
+	body := &physics.Body{Postion: physics.Vec2{0, 0}, Mass: 2.2, Shape: &physics.Circle{Radius: 100}}
+	game.Bodies = append(game.Bodies, body)
+
+	return game
 }
