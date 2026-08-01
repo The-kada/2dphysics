@@ -10,6 +10,49 @@ type ContactInfo struct {
 
 func IsColliding(a *Body, b *Body) (bool, *ContactInfo) {
 	isCircleCircle := a.Shape.GetType() == CircleShape && b.Shape.GetType() == CircleShape
+	isPolygonPolygon := a.Shape.GetType() == ConvexPolygonShape || a.Shape.GetType() == RectangleShape && b.Shape.GetType() == ConvexPolygonShape || b.Shape.GetType() == RectangleShape
+
+	if isPolygonPolygon {
+		var polygonA, polygonB *ConvexPolygon
+		var ok bool
+
+		if polygonA, ok = a.Shape.(*ConvexPolygon); !ok {
+			polygonA = &a.Shape.(*Rectangle).ConvexPolygon
+		}
+
+		if polygonB, ok = b.Shape.(*ConvexPolygon); !ok {
+			polygonB = &b.Shape.(*Rectangle).ConvexPolygon
+		}
+
+		sepAB, axisA, pointB := polygonA.FindMinSeperation(polygonB)
+		if sepAB >= 0 {
+			return false, nil
+		}
+
+		sepBA, axisB, pointA := polygonB.FindMinSeperation(polygonA)
+		if sepBA >= 0 {
+			return false, nil
+		}
+
+		contactInfo := &ContactInfo{}
+		contactInfo.A = a
+		contactInfo.B = b
+
+		if sepAB > sepBA {
+			axisANormal := axisA.Normal()
+			t := axisANormal.Scale(-float64(sepAB))
+			contactInfo.Start = pointB
+			contactInfo.End = pointB.Add(&t)
+			contactInfo.Depth = -float32(sepAB)
+		} else {
+			axisBNormal := axisB.Normal()
+			t := axisBNormal.Scale(-float64(sepBA))
+			contactInfo.Start = pointA
+			contactInfo.End = pointA.Add(&t)
+			contactInfo.Depth = -float32(sepBA)
+		}
+		return true, contactInfo
+	}
 
 	if isCircleCircle {
 		vectorAlongCenters := b.Postion.Sub(&a.Postion)

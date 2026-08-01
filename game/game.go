@@ -4,11 +4,9 @@ import (
 	"astro/gameerrors"
 	"astro/physics"
 	"astro/util"
-	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
-	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
 type Game struct {
@@ -54,10 +52,9 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		}
 
 		if body.Shape.GetType() == physics.ConvexPolygonShape {
-			util.DrawPolygon(body.Shape.(*physics.ConvexPolygon), 40, body.Postion, screen, g.debug)
+			util.DrawPolygon(body.Shape.(*physics.ConvexPolygon), 270, body.Postion, screen, g.debug)
 		}
 
-		vector.StrokeLine(screen, float32(anchor[0]), float32(anchor[1]), float32(body.Postion[0]), float32(body.Postion[1]), 2, color.RGBA{51, 255, 51, 1}, true)
 	}
 
 	if g.debug {

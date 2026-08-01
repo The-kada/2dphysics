@@ -16,6 +16,12 @@ func (v1 Vec2) Scale(n float64) Vec2 {
 	return Vec2{v1[0] * n, v1[1] * n}
 }
 
+func (v1 Vec2) Normal() Vec2 {
+	v := Vec2{v1[1], -v1[0]}
+	v.Normalize()
+	return v
+}
+
 // Rotate the vector in degrees
 func (v1 Vec2) Rotate(angle float64) Vec2 {
 	angle = angle * (math.Pi / 180)

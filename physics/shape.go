@@ -1,6 +1,8 @@
 package physics
 
 import (
+	"math"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
@@ -38,6 +40,39 @@ func (c *Circle) GetType() ShapeType {
 type ConvexPolygon struct {
 	localVertices []Vec2
 	WorldVertices []Vec2
+}
+
+func (p *ConvexPolygon) FindMinSeperation(op *ConvexPolygon) (seperation float64, axis Vec2, point Vec2) {
+	seperation = -math.MaxFloat64
+
+	for i := 0; i < len(p.WorldVertices); i++ {
+		edge := p.edgeAtIndex(i)
+		normal := edge.Normal()
+
+		minSep := math.MaxFloat64
+		var tempPoint Vec2
+		for j := 0; j < len(op.WorldVertices); j++ {
+			distance := op.WorldVertices[j].Sub(&p.WorldVertices[i]).Dot(&normal)
+			if distance < minSep {
+				minSep = distance
+				tempPoint = op.WorldVertices[j]
+			}
+		}
+
+		if minSep > seperation {
+			seperation = minSep
+			axis = p.edgeAtIndex(i)
+			point = tempPoint
+		}
+	}
+
+	return seperation, axis, point
+}
+
+func (p *ConvexPolygon) edgeAtIndex(index int) Vec2 {
+	currVertex := p.WorldVertices[index]
+	nextVertex := p.WorldVertices[(index+1)%len(p.WorldVertices)]
+	return nextVertex.Sub(&currVertex)
 }
 
 func NewPolygon(vertices []Vec2) *ConvexPolygon {
