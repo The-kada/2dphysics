@@ -1,11 +1,12 @@
 package physics
 
 type ContactInfo struct {
-	A     *Body
-	B     *Body
-	Start Vec2
-	End   Vec2
-	Depth float32
+	A      *Body
+	B      *Body
+	Start  Vec2
+	End    Vec2
+	Depth  float32
+	Normal Vec2
 }
 
 func IsColliding(a *Body, b *Body) (bool, *ContactInfo) {
@@ -44,12 +45,14 @@ func IsColliding(a *Body, b *Body) (bool, *ContactInfo) {
 			contactInfo.Start = pointB
 			contactInfo.End = pointB.Add(&t)
 			contactInfo.Depth = -float32(sepAB)
+			contactInfo.Normal = axisANormal
 		} else {
 			axisBNormal := axisB.Normal()
 			t := axisBNormal.Scale(-float64(sepBA))
 			contactInfo.Start = pointA
 			contactInfo.End = pointA.Add(&t)
 			contactInfo.Depth = -float32(sepBA)
+			contactInfo.Normal = axisBNormal.Scale(-1)
 		}
 		return true, contactInfo
 	}
@@ -70,7 +73,7 @@ func IsColliding(a *Body, b *Body) (bool, *ContactInfo) {
 			end := a.Postion.Add(&aToB)
 			depth := end.Sub(&start).Magnitude()
 
-			return true, &ContactInfo{a, b, start, end, float32(depth)}
+			return true, &ContactInfo{a, b, start, end, float32(depth), vectorAlongCenters.Normal()}
 		}
 		return false, nil
 	} else {
