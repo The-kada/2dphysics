@@ -36,7 +36,8 @@ func NewGame() *game.Game {
 		ScreenHeight: screenHeight,
 	}
 
-	body := &physics.Body{Postion: physics.Vec2{0, 0}, Mass: 2.2, Shape: physics.NewPolygon([]physics.Vec2{{0, -50}, {20, 70}, {-70, 70}})}
+	//body := &physics.Body{Postion: physics.Vec2{0, 0}, Mass: 2.2, Shape: physics.NewPolygon([]physics.Vec2{{0, -50}, {20, 70}, {-70, 70}})}
+	body := &physics.Body{Postion: physics.Vec2{0, 0}, Mass: 2.2, Shape: physics.NewRectangle(100, 100)}
 	game.Bodies = append(game.Bodies, body)
 
 	return game

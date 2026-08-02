@@ -7,6 +7,7 @@ type Body struct {
 	Mass         float64
 	Shape        shape
 	Forces       Vec2
+	Rotation     float64
 }
 
 func (b *Body) CalculateAcceleration() {

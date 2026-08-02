@@ -48,7 +48,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		}
 
 		if body.Shape.GetType() == physics.RectangleShape {
-			util.DrawPolygon(&body.Shape.(*physics.Rectangle).ConvexPolygon, 0, body.Postion, screen, g.debug)
+			util.DrawPolygon(&body.Shape.(*physics.Rectangle).ConvexPolygon, body.Rotation, body.Postion, screen, g.debug)
 		}
 
 		if body.Shape.GetType() == physics.ConvexPolygonShape {
@@ -77,7 +77,7 @@ func (g *Game) handleQuit() error {
 	}
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyR) {
-		body := &physics.Body{Postion: physics.Vec2{float64(g.ScreenWidth) / 2, float64(g.ScreenHeight) / 2}, Mass: 2.2, Shape: physics.NewRectangle(200, 100)}
+		body := &physics.Body{Postion: physics.Vec2{float64(g.ScreenWidth) / 2, float64(g.ScreenHeight) / 2}, Rotation: 60, Mass: 2.2, Shape: physics.NewRectangle(100, 100)}
 		g.Bodies = append(g.Bodies, body)
 	}
 
