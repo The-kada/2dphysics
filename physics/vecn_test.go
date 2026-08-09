@@ -84,3 +84,21 @@ func TestVecNAt(t *testing.T) {
 	assert.Equal(t, float64(20), v.At(1))
 	assert.Equal(t, float64(30), v.At(2))
 }
+
+func TestVecNZeroSetsAllElementsToZero(t *testing.T) {
+	v := NewVecN(1, 2, 3)
+	v.Zero()
+	assert.Equal(t, NewVecN(0, 0, 0), v)
+}
+
+func TestVecNZeroPreservesSize(t *testing.T) {
+	v := NewVecN(1, 2, 3, 4, 5)
+	v.Zero()
+	assert.Equal(t, 5, v.Size())
+}
+
+func TestVecNZeroOnAlreadyZeroVector(t *testing.T) {
+	v := NewVecN(0, 0, 0)
+	v.Zero()
+	assert.Equal(t, NewVecN(0, 0, 0), v)
+}

@@ -75,3 +75,9 @@ func (vecn *VecN) At(index int) float64 {
 func (vecn *VecN) Size() int {
 	return len(vecn.elements)
 }
+
+func (vecn *VecN) Zero() {
+	for i := 0; i < len(vecn.elements); i++ {
+		vecn.elements[i] = 0
+	}
+}
