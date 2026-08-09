@@ -1,5 +1,7 @@
 package physics
 
+import "errors"
+
 type MatMN struct {
 	elements []VecN
 }
@@ -37,4 +39,19 @@ func (mat *MatMN) Cols() int {
 
 func (mat *MatMN) Set(row, col int, val float64) {
 	mat.elements[row].elements[col] = val
+}
+
+func (mat *MatMN) MultiplyVector(vecn *VecN) (*VecN, error) {
+	if len(mat.elements[0].elements) != len(vecn.elements) {
+		return nil, errors.New("mismatched err")
+	}
+
+	result := &VecN{}
+
+	for _, row := range mat.elements {
+		val, _ := row.Dot(vecn)
+		result.elements = append(result.elements, val)
+	}
+
+	return result, nil
 }
