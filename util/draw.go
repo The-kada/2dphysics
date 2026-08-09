@@ -4,13 +4,22 @@ package util
 import (
 	"astro/physics"
 	"image/color"
+	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
-func DrawCircle(circle *physics.Circle, body *physics.Vec2, dst *ebiten.Image, debug bool) {
+func DrawCircle(circle *physics.Circle, rotation float64, body *physics.Vec2, dst *ebiten.Image, debug bool) {
 	if debug {
+		// x' = a + (x − a)cos θ + (y − b)sin θ
+		// y' = b − (x − a)sin θ + (y − b)cos θ
+		// find a point on the curcumfrence and rotate ie about the circle center to show rotation
+		normalScaledRadius := body.Normal().Scale(circle.Radius).Add(body)
+		radians := rotation * (math.Pi / 180)
+		x := body[0] + ((normalScaledRadius[0] - body[0]) * math.Cos(radians)) + ((normalScaledRadius[1] - body[1]) * math.Sin(radians))
+		y := body[1] - ((normalScaledRadius[0] - body[0]) * math.Sin(radians)) + ((normalScaledRadius[1] - body[1]) * math.Cos(radians))
+		vector.StrokeLine(dst, float32(body[0]), float32(body[1]), float32(x), float32(y), 3, color.RGBA{1, 255, 51, 1}, false)
 		vector.StrokeCircle(dst, float32(body[0]), float32(body[1]), float32(circle.Radius), 2, color.RGBA{51, 255, 51, 1}, true)
 	} else {
 		vector.FillCircle(dst, float32(body[0]), float32(body[1]), float32(circle.Radius), color.White, true)
