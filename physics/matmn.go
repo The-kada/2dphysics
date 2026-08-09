@@ -22,3 +22,19 @@ func (mat *MatMN) Zero() {
 func (mat *MatMN) At(row, col int) float64 {
 	return mat.elements[row].At(col)
 }
+
+func (mat *MatMN) Rows() int {
+	return len(mat.elements)
+}
+
+func (mat *MatMN) Cols() int {
+	if len(mat.elements) == 0 {
+		return 0
+	}
+
+	return len(mat.elements[0].elements)
+}
+
+func (mat *MatMN) Set(row, col int, val float64) {
+	mat.elements[row].elements[col] = val
+}
