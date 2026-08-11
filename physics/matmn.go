@@ -55,3 +55,47 @@ func (mat *MatMN) MultiplyVector(vecn *VecN) (*VecN, error) {
 
 	return result, nil
 }
+
+func (mat *MatMN) Transpose() *MatMN {
+	result := &MatMN{
+		elements: make([]VecN, len(mat.elements[0].elements)),
+	}
+
+	for index := range result.elements {
+		result.elements[index].elements = make([]float64, len(mat.elements))
+	}
+
+	for i := 0; i < mat.Rows(); i++ {
+		for j := 0; j < mat.Cols(); j++ {
+			result.Set(j, i, mat.At(i, j))
+		}
+
+	}
+
+	return result
+}
+
+func (mat *MatMN) MultiplyMat(matmn *MatMN) (*MatMN, error) {
+	if len(mat.elements[0].elements) != len(matmn.elements) {
+		return nil, errors.New("mismatched err")
+	}
+
+	inputTransposed := matmn.Transpose()
+
+	result := &MatMN{make([]VecN, len(mat.elements))}
+	for i := range result.elements {
+		result.elements[i] = VecN{elements: make([]float64, len(matmn.elements[0].elements))}
+	}
+
+	for i := 0; i < result.Rows(); i++ {
+		for j := 0; j < result.Cols(); j++ {
+			res, err := mat.elements[i].Dot(&inputTransposed.elements[j])
+			if err != nil {
+				return nil, err
+			}
+			result.Set(i, j, res)
+		}
+	}
+
+	return result, nil
+}
