@@ -99,3 +99,26 @@ func (mat *MatMN) MultiplyMat(matmn *MatMN) (*MatMN, error) {
 
 	return result, nil
 }
+
+// TODO: UNDERSTAND THIS WAS COPIED LINE FOR LINE LOL
+func SolveGaussSeidel(matmn *MatMN, vecn *VecN) *VecN {
+	n := vecn.Size()
+
+	x := &VecN{elements: make([]float64, n)}
+
+	for iterations := 0; iterations < n; iterations++ {
+		for i := 0; i < n; i++ {
+			if matmn.At(i, i) != 0 {
+				res, err := matmn.elements[i].Dot(x)
+				if err != nil {
+					panic(err)
+				}
+				dx := (vecn.At(i) / matmn.At(i, i)) - (res / matmn.At(i, i))
+				if dx == dx {
+					x.elements[i] += dx
+				}
+			}
+		}
+	}
+	return x
+}
