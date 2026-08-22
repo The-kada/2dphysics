@@ -22,9 +22,7 @@ func (v1 Vec2) Normal() Vec2 {
 	return v
 }
 
-// Rotate the vector in degrees
 func (v1 Vec2) Rotate(angle float64) Vec2 {
-	angle = angle * (math.Pi / 180)
 	xRotation := v1[0]*math.Cos(angle) - v1[1]*math.Sin(angle)
 	yRotation := v1[0]*math.Sin(angle) + v1[1]*math.Cos(angle)
 	return Vec2{xRotation, yRotation}

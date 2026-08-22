@@ -12,6 +12,7 @@ import (
 type Game struct {
 	Bodies       []*physics.Body
 	contacts     []*physics.ContactInfo
+	Constraints  []physics.Constraint
 	ScreenWidth  int
 	ScreenHeight int
 	debug        bool
@@ -25,15 +26,27 @@ func (g *Game) Update() error {
 		return err
 	}
 
-	mouseX, mouseY := ebiten.CursorPosition()
-	g.Bodies[0].Postion[0] = float64(mouseX)
-	g.Bodies[0].Postion[1] = float64(mouseY)
+	for _, body := range g.Bodies {
+		weight := physics.Vec2{0, body.Mass * 9.8 * 1 * 50}
+		body.Forces = body.Forces.Add(&weight)
+	}
 
 	for _, body := range g.Bodies {
-		body.SumTorque = 1000000
-		body.CalculateAcceleration()
-		body.IntegrateAcceleration(ebiten.ActualTPS())
-		body.IntegrateVelocity(ebiten.ActualTPS())
+		body.IntegrateAcceleration(float64(ebiten.TPS()))
+	}
+
+	for _, constraint := range g.Constraints {
+		constraint.PreSolve()
+	}
+
+	for i := 0; i < 5; i++ {
+		for _, constraint := range g.Constraints {
+			constraint.Solve()
+		}
+	}
+
+	for _, body := range g.Bodies {
+		body.IntegrateVelocity(float64(ebiten.TPS()))
 	}
 
 	for i := 0; i < len(g.Bodies); i++ {
@@ -83,20 +96,20 @@ func (g *Game) handleQuit() error {
 		return gameerrors.GameExitedError
 	}
 
-	if inpututil.IsKeyJustPressed(ebiten.KeyR) {
-		body := physics.NewBody(physics.Vec2{float64(g.ScreenWidth) / 2, float64(g.ScreenHeight) / 2}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, 2.2, 60, 0, 0, 0, physics.NewRectangle(100, 100))
-		g.Bodies = append(g.Bodies, body)
-	}
+	// if inpututil.IsKeyJustPressed(ebiten.KeyR) {
+	// 	body := physics.NewBody(physics.Vec2{float64(g.ScreenWidth) / 2, float64(g.ScreenHeight) / 2}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, 2.2, 60, 0, 0, 0, physics.NewRectangle(100, 100))
+	// 	g.Bodies = append(g.Bodies, body)
+	// }
 
-	if inpututil.IsKeyJustPressed(ebiten.KeyC) {
-		body := physics.NewBody(physics.Vec2{float64(g.ScreenWidth) / 2, float64(g.ScreenHeight) / 2}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, 2.2, 0, 0, 0, 0, &physics.Circle{Radius: 100})
-		g.Bodies = append(g.Bodies, body)
-	}
+	// if inpututil.IsKeyJustPressed(ebiten.KeyC) {
+	// 	body := physics.NewBody(physics.Vec2{float64(g.ScreenWidth) / 2, float64(g.ScreenHeight) / 2}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, 2.2, 0, 0, 0, 0, &physics.Circle{Radius: 100})
+	// 	g.Bodies = append(g.Bodies, body)
+	// }
 
-	if inpututil.IsKeyJustPressed(ebiten.KeyP) {
-		body := physics.NewBody(physics.Vec2{float64(g.ScreenWidth) / 2, float64(g.ScreenHeight) / 2}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, 2.2, 0, 0, 0, 0, physics.NewPolygon([]physics.Vec2{{0, -50}, {20, 70}, {-70, 70}}))
-		g.Bodies = append(g.Bodies, body)
-	}
+	// if inpututil.IsKeyJustPressed(ebiten.KeyP) {
+	// 	body := physics.NewBody(physics.Vec2{float64(g.ScreenWidth) / 2, float64(g.ScreenHeight) / 2}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, 2.2, 0, 0, 0, 0, physics.NewPolygon([]physics.Vec2{{0, -50}, {20, 70}, {-70, 70}}))
+	// 	g.Bodies = append(g.Bodies, body)
+	// }
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyD) {
 		g.debug = !g.debug

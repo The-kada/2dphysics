@@ -114,9 +114,9 @@ func SolveGaussSeidel(matmn *MatMN, vecn *VecN) *VecN {
 					panic(err)
 				}
 				dx := (vecn.At(i) / matmn.At(i, i)) - (res / matmn.At(i, i))
-				if dx == dx {
-					x.elements[i] += dx
-				}
+				//if dx == dx {
+				x.elements[i] += dx
+				//}
 			}
 		}
 	}
