@@ -113,8 +113,7 @@ func (b *Body) ApplyImpulseAngular(impulse float64) {
 	if b.IsStatic() {
 		return
 	}
-	x := impulse * b.invI
-	b.AngularVelocity += b.AngularVelocity * x
+	b.AngularVelocity += impulse * b.invI
 }
 
 func (b *Body) ApplyImpulseAtPoint(impulse Vec2, radius Vec2) {

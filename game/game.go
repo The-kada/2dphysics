@@ -36,7 +36,7 @@ func (g *Game) Update() error {
 	}
 
 	for _, constraint := range g.Constraints {
-		constraint.PreSolve()
+		constraint.PreSolve(1.0 / float64(ebiten.TPS()))
 	}
 
 	for i := 0; i < 5; i++ {

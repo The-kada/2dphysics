@@ -37,7 +37,7 @@ func NewGame() *game.Game {
 		Constraints:  make([]physics.Constraint, 0),
 	}
 
-	for i := 0; i < 5; i++ {
+	for i := 0; i < 8; i++ {
 		mass := 0.0
 		if i != 0 {
 			mass = 1

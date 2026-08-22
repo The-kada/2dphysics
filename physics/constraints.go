@@ -9,7 +9,7 @@ type constraint struct {
 
 type Constraint interface {
 	Solve()
-	PreSolve()
+	PreSolve(dt float64)
 }
 
 func (constraint *constraint) GetInvM() *MatMN {
@@ -106,7 +106,7 @@ func (constraint *JointConstraint) Solve() {
 	constraint.b.ApplyImpulseAngular(impulses.At(5))
 }
 
-func (constraint *JointConstraint) PreSolve() {
+func (constraint *JointConstraint) PreSolve(dt float64) {
 
 	// derive the jacobian
 	pa := constraint.a.LocalToWorldSpace(&constraint.aPoint)
@@ -144,4 +144,9 @@ func (constraint *JointConstraint) PreSolve() {
 
 	constraint.b.ApplyImpulseLinear(Vec2{impulses.At(3), impulses.At(4)})
 	constraint.b.ApplyImpulseAngular(impulses.At(5))
+
+	diff := pb.Sub(&pa)
+	C := diff.Dot(&diff)
+	beta := 0.1
+	constraint.bias = (beta / dt) * C
 }
