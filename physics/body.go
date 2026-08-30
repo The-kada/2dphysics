@@ -18,9 +18,11 @@ type Body struct {
 	Rotation            float64
 	i                   float64
 	invI                float64
+	friction            float64
+	restitution         float64
 }
 
-func NewBody(position, velocity, acceleration, forces Vec2, mass, rotation, angularVelocity, angularAcceleration, SumTorque float64, shape shape) *Body {
+func NewBody(position, velocity, acceleration, forces Vec2, mass, rotation, angularVelocity, angularAcceleration, SumTorque, friciton, restitution float64, shape shape) *Body {
 	var body Body
 	body.Postion = position
 	body.velocity = velocity
@@ -29,6 +31,8 @@ func NewBody(position, velocity, acceleration, forces Vec2, mass, rotation, angu
 	body.AngularVelocity = angularVelocity
 	body.SumTorque = SumTorque
 	body.Mass = mass
+	body.friction = friciton
+	body.restitution = restitution
 	if body.Mass != 0 {
 		body.invMass = 1 / body.Mass
 	} else {

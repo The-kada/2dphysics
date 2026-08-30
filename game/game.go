@@ -26,6 +26,19 @@ func (g *Game) Update() error {
 		return err
 	}
 
+	for i := 0; i < len(g.Bodies); i++ {
+		for j := i + 1; j < len(g.Bodies); j++ {
+			if colliding, contact := physics.IsColliding(g.Bodies[i], g.Bodies[j]); colliding {
+				g.contacts = append(g.contacts, contact)
+			}
+		}
+	}
+
+	for _, contact := range g.contacts {
+		constraint := physics.NewPenetrationConstraint(contact.A, contact.B, contact.Start, contact.End, contact.Normal, 0)
+		g.Constraints = append(g.Constraints, constraint)
+	}
+
 	for _, body := range g.Bodies {
 		weight := physics.Vec2{0, body.Mass * 9.8 * 1 * 50}
 		body.Forces = body.Forces.Add(&weight)
@@ -47,14 +60,6 @@ func (g *Game) Update() error {
 
 	for _, body := range g.Bodies {
 		body.IntegrateVelocity(float64(ebiten.TPS()))
-	}
-
-	for i := 0; i < len(g.Bodies); i++ {
-		for j := i + 1; j < len(g.Bodies); j++ {
-			if colliding, contact := physics.IsColliding(g.Bodies[i], g.Bodies[j]); colliding {
-				g.contacts = append(g.contacts, contact)
-			}
-		}
 	}
 
 	return nil
@@ -81,8 +86,9 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		for _, contact := range g.contacts {
 			util.HighlightCollision(screen, contact)
 		}
-		g.contacts = make([]*physics.ContactInfo, 0, 0)
 	}
+
+	g.contacts = make([]*physics.ContactInfo, 0, 0)
 
 }
 
@@ -101,10 +107,10 @@ func (g *Game) handleQuit() error {
 	// 	g.Bodies = append(g.Bodies, body)
 	// }
 
-	// if inpututil.IsKeyJustPressed(ebiten.KeyC) {
-	// 	body := physics.NewBody(physics.Vec2{float64(g.ScreenWidth) / 2, float64(g.ScreenHeight) / 2}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, 2.2, 0, 0, 0, 0, &physics.Circle{Radius: 100})
-	// 	g.Bodies = append(g.Bodies, body)
-	// }
+	if inpututil.IsKeyJustPressed(ebiten.KeyC) {
+		body := physics.NewBody(physics.Vec2{float64(g.ScreenWidth) / 2, float64(g.ScreenHeight) / 2}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, 2.2, 0, 0, 0, 0, 0, 0, &physics.Circle{Radius: 100})
+		g.Bodies = append(g.Bodies, body)
+	}
 
 	// if inpututil.IsKeyJustPressed(ebiten.KeyP) {
 	// 	body := physics.NewBody(physics.Vec2{float64(g.ScreenWidth) / 2, float64(g.ScreenHeight) / 2}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, 2.2, 0, 0, 0, 0, physics.NewPolygon([]physics.Vec2{{0, -50}, {20, 70}, {-70, 70}}))

@@ -37,19 +37,14 @@ func NewGame() *game.Game {
 		Constraints:  make([]physics.Constraint, 0),
 	}
 
-	for i := 0; i < 8; i++ {
-		mass := 0.0
-		if i != 0 {
-			mass = 1
-		}
-		body := physics.NewBody(physics.Vec2{float64(game.ScreenWidth)/2 - float64(i*40), 100}, physics.Vec2{}, physics.Vec2{}, physics.Vec2{}, mass, 0, 0, 0, 0, physics.NewRectangle(30, 30))
-		game.Bodies = append(game.Bodies, body)
-	}
+	leftWall := physics.NewBody(physics.Vec2{40, float64(game.ScreenHeight) - float64(game.ScreenHeight)/4}, physics.Vec2{}, physics.Vec2{}, physics.Vec2{}, 0, 0, 0, 0, 0, 0, 0, physics.NewRectangle(80, float64(game.ScreenHeight)/2))
+	game.Bodies = append(game.Bodies, leftWall)
 
-	for i := 0; i < len(game.Bodies)-1; i++ {
-		constraint := physics.NewJointConstraint(game.Bodies[i], game.Bodies[i+1], game.Bodies[i].Postion)
-		game.Constraints = append(game.Constraints, constraint)
-	}
+	rightWall := physics.NewBody(physics.Vec2{float64(game.ScreenWidth) - 40, float64(game.ScreenHeight) - float64(game.ScreenHeight)/4}, physics.Vec2{}, physics.Vec2{}, physics.Vec2{}, 0, 0, 0, 0, 0, 0, 0, physics.NewRectangle(80, float64(game.ScreenHeight)/2))
+	game.Bodies = append(game.Bodies, rightWall)
+
+	floor := physics.NewBody(physics.Vec2{float64(game.ScreenWidth) / 2, float64(game.ScreenHeight) - 40}, physics.Vec2{}, physics.Vec2{}, physics.Vec2{}, 0, 0, 0, 0, 0, 0, 0, physics.NewRectangle(float64(game.ScreenWidth)-160, 80))
+	game.Bodies = append(game.Bodies, floor)
 
 	return game
 }
