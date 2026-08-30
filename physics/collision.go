@@ -49,7 +49,7 @@ func checkCircleCircleCollision(a *Body, b *Body) (bool, *ContactInfo) {
 		end := a.Postion.Add(&aToB)
 		depth := end.Sub(&start).Magnitude()
 
-		return true, &ContactInfo{a, b, start, end, float32(depth), vectorAlongCenters.Normal()}
+		return true, &ContactInfo{a, b, start, end, float32(depth), normalAlongCenters}
 	}
 
 	return false, nil
