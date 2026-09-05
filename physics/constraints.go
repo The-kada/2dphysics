@@ -225,7 +225,7 @@ func (constraint *PenetrationConstraint) PreSolve(dt float64) {
 	diff := pb.Sub(&pa)
 	c := diff.Dot(&j1)
 	beta := 0.2
-	c = math.Min(beta, beta+c)
+	c = math.Min(0.0, 0.01+c)
 
 	va := constraint.a.velocity.Add(&Vec2{-constraint.a.AngularVelocity * ra[1], -constraint.a.AngularVelocity * ra[0]})
 	vb := constraint.a.velocity.Add(&Vec2{-constraint.b.AngularVelocity * rb[1], -constraint.b.AngularVelocity * rb[0]})

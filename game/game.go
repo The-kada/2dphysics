@@ -105,17 +105,17 @@ func (g *Game) handleQuit() error {
 	}
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyR) {
-		body := physics.NewBody(physics.Vec2{float64(g.ScreenWidth) / 2, float64(g.ScreenHeight) / 2}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, 2.2, 60, 0, 0, 0, 0, 0, physics.NewRectangle(100, 100))
+		body := physics.NewBody(physics.Vec2{float64(g.ScreenWidth) / 2, float64(g.ScreenHeight) / 2}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, 2.2, 60, 0, 0, 0, 2, 1.3, physics.NewRectangle(100, 100))
 		g.Bodies = append(g.Bodies, body)
 	}
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyC) {
-		body := physics.NewBody(physics.Vec2{float64(g.ScreenWidth) / 2, float64(g.ScreenHeight) / 2}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, 2.2, 0, 0, 0, 0, 0, 0, &physics.Circle{Radius: 100})
+		body := physics.NewBody(physics.Vec2{float64(g.ScreenWidth) / 2, float64(g.ScreenHeight) / 2}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, 2.2, 0, 0, 0, 0, 2, 1.3, &physics.Circle{Radius: 100})
 		g.Bodies = append(g.Bodies, body)
 	}
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyP) {
-		body := physics.NewBody(physics.Vec2{float64(g.ScreenWidth) / 2, float64(g.ScreenHeight) / 2}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, 2.2, 0, 0, 0, 0, 0, 0, physics.NewPolygon([]physics.Vec2{{0, -50}, {20, 70}, {-70, 70}}))
+		body := physics.NewBody(physics.Vec2{float64(g.ScreenWidth) / 2, float64(g.ScreenHeight) / 2}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, 2.2, 0, 0, 0, 0, 2, 1.3, physics.NewPolygon([]physics.Vec2{{0, -50}, {20, 70}, {-70, 70}}))
 		g.Bodies = append(g.Bodies, body)
 	}
 
