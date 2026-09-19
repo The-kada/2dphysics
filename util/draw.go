@@ -22,7 +22,7 @@ func DrawCircle(circle *physics.Circle, rotation float64, body *physics.Vec2, ds
 		vector.StrokeLine(dst, float32(body[0]), float32(body[1]), float32(x), float32(y), 3, color.RGBA{1, 255, 51, 1}, false)
 		vector.StrokeCircle(dst, float32(body[0]), float32(body[1]), float32(circle.Radius), 2, color.RGBA{51, 255, 51, 1}, true)
 	} else {
-		vector.FillCircle(dst, float32(body[0]), float32(body[1]), float32(circle.Radius), color.White, true)
+		vector.FillCircle(dst, float32(body[0]), float32(body[1]), float32(circle.Radius), color.RGBA{125, 255, 255, 0}, true)
 	}
 }
 
@@ -38,6 +38,7 @@ func DrawPolygon(polygon *physics.ConvexPolygon, rotation float64, position phys
 	path.Close()
 
 	var colorScaler ebiten.ColorScale
+	colorScaler.ScaleWithColor(color.RGBA{220, 220, 220, 128})
 
 	if debug {
 		colorScaler.ScaleWithColor(color.RGBA{51, 255, 51, 1})

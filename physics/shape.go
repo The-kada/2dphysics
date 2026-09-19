@@ -42,31 +42,76 @@ type ConvexPolygon struct {
 	WorldVertices []Vec2
 }
 
-func (p *ConvexPolygon) FindMinSeperation(op *ConvexPolygon) (seperation float64, axis Vec2, point Vec2) {
-	seperation = -math.MaxFloat64
+func (p *ConvexPolygon) FindMinSeperation(op *ConvexPolygon) (separation float64, referenceEdgeIndex int) {
+	separation = -math.MaxFloat64
 
 	for i := 0; i < len(p.WorldVertices); i++ {
 		edge := p.edgeAtIndex(i)
 		normal := edge.Normal()
 
 		minSep := math.MaxFloat64
-		var tempPoint Vec2
 		for j := 0; j < len(op.WorldVertices); j++ {
 			distance := op.WorldVertices[j].Sub(&p.WorldVertices[i]).Dot(&normal)
 			if distance < minSep {
 				minSep = distance
-				tempPoint = op.WorldVertices[j]
 			}
 		}
 
-		if minSep > seperation {
-			seperation = minSep
-			axis = p.edgeAtIndex(i)
-			point = tempPoint
+		if minSep > separation {
+			separation = minSep
+			referenceEdgeIndex = i
 		}
 	}
 
-	return seperation, axis, point
+	return separation, referenceEdgeIndex
+}
+
+// findIncidentEdge returns the index of the edge on p whose outward normal is
+// most anti-parallel to referenceNormal (i.e. the edge most facing the reference edge).
+func (p *ConvexPolygon) findIncidentEdge(referenceNormal Vec2) int {
+	incidentIndex := 0
+	minProj := math.MaxFloat64
+	for i := 0; i < len(p.WorldVertices); i++ {
+		edgeNormal := p.edgeAtIndex(i).Normal()
+		proj := edgeNormal.Dot(&referenceNormal)
+		if proj < minProj {
+			minProj = proj
+			incidentIndex = i
+		}
+	}
+	return incidentIndex
+}
+
+// clipSegmentToLine performs one step of Sutherland-Hodgman clipping:
+// it clips the input polygon/segment against the half-plane defined by edge c0→c1,
+// keeping points on the interior side (dot with outward normal <= 0).
+func clipSegmentToLine(input []Vec2, c0, c1 Vec2) []Vec2 {
+	if len(input) == 0 {
+		return nil
+	}
+	output := make([]Vec2, 0, len(input))
+	c0c1 := c1.Sub(&c0)
+	n := c0c1.Normal() // outward normal of the clipping edge
+
+	for i := 0; i < len(input); i++ {
+		curr := input[i]
+		next := input[(i+1)%len(input)]
+
+		dCurr := curr.Sub(&c0).Dot(&n)
+		dNext := next.Sub(&c0).Dot(&n)
+
+		if dCurr <= 0 {
+			output = append(output, curr)
+		}
+		// If curr and next are on opposite sides, add the intersection point.
+		if (dCurr < 0 && dNext > 0) || (dCurr > 0 && dNext < 0) {
+			t := dCurr / (dCurr - dNext)
+			diff := next.Sub(&curr)
+			scaled := diff.Scale(t)
+			output = append(output, curr.Add(&scaled))
+		}
+	}
+	return output
 }
 
 func (p *ConvexPolygon) edgeAtIndex(index int) Vec2 {

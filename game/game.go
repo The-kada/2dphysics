@@ -28,8 +28,8 @@ func (g *Game) Update() error {
 
 	for i := 0; i < len(g.Bodies); i++ {
 		for j := i + 1; j < len(g.Bodies); j++ {
-			if colliding, contact := physics.IsColliding(g.Bodies[i], g.Bodies[j]); colliding {
-				g.contacts = append(g.contacts, contact)
+			if colliding, contacts := physics.IsColliding(g.Bodies[i], g.Bodies[j]); colliding {
+				g.contacts = append(g.contacts, contacts...)
 			}
 		}
 	}
@@ -54,7 +54,7 @@ func (g *Game) Update() error {
 		constraint.PreSolve(1.0 / float64(ebiten.TPS()))
 	}
 
-	for i := 0; i < 5; i++ {
+	for i := 0; i < 10; i++ {
 		for _, constraint := range g.Constraints {
 			constraint.Solve()
 		}
@@ -105,17 +105,17 @@ func (g *Game) handleQuit() error {
 	}
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyR) {
-		body := physics.NewBody(physics.Vec2{float64(g.ScreenWidth) / 2, float64(g.ScreenHeight) / 2}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, 2.2, 60, 0, 0, 0, 2, 1.3, physics.NewRectangle(100, 100))
+		body := physics.NewBody(physics.Vec2{float64(g.ScreenWidth) / 2, float64(g.ScreenHeight) / 2}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, 2.2, 60, 0, 0, 0, 2, 0.02, physics.NewRectangle(100, 100))
 		g.Bodies = append(g.Bodies, body)
 	}
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyC) {
-		body := physics.NewBody(physics.Vec2{float64(g.ScreenWidth) / 2, float64(g.ScreenHeight) / 2}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, 2.2, 0, 0, 0, 0, 2, 1.3, &physics.Circle{Radius: 100})
+		body := physics.NewBody(physics.Vec2{float64(g.ScreenWidth) / 2, float64(g.ScreenHeight) / 2}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, 2.2, 0, 0, 0, 0, 2, 0.02, &physics.Circle{Radius: 100})
 		g.Bodies = append(g.Bodies, body)
 	}
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyP) {
-		body := physics.NewBody(physics.Vec2{float64(g.ScreenWidth) / 2, float64(g.ScreenHeight) / 2}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, 2.2, 0, 0, 0, 0, 2, 1.3, physics.NewPolygon([]physics.Vec2{{0, -50}, {20, 70}, {-70, 70}}))
+		body := physics.NewBody(physics.Vec2{float64(g.ScreenWidth) / 2, float64(g.ScreenHeight) / 2}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, physics.Vec2{0, 0}, 2.2, 0, 0, 0, 0, 2, 0.02, physics.NewPolygon([]physics.Vec2{{0, -50}, {20, 70}, {-70, 70}}))
 		g.Bodies = append(g.Bodies, body)
 	}
 
