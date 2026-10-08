@@ -26,6 +26,8 @@ func (g *Game) Update() error {
 		return err
 	}
 
+	g.contacts = make([]*physics.ContactInfo, 0, 0)
+
 	for i := 0; i < len(g.Bodies); i++ {
 		for j := i + 1; j < len(g.Bodies); j++ {
 			if colliding, contacts := physics.IsColliding(g.Bodies[i], g.Bodies[j]); colliding {
@@ -89,8 +91,6 @@ func (g *Game) Draw(screen *ebiten.Image) {
 			util.HighlightCollision(screen, contact)
 		}
 	}
-
-	g.contacts = make([]*physics.ContactInfo, 0, 0)
 
 }
 
