@@ -13,7 +13,7 @@ const (
 )
 
 type shape interface {
-	GetMommentOfInertia() float64
+	getMommentOfInertia() float64
 	UpdateVertices(angle float64, position Vec2)
 	GetType() ShapeType
 }
@@ -22,7 +22,7 @@ type Circle struct {
 	Radius float64
 }
 
-func (c *Circle) GetMommentOfInertia() float64 {
+func (c *Circle) getMommentOfInertia() float64 {
 	return 0.5 * c.Radius * c.Radius
 }
 
@@ -81,7 +81,7 @@ func NewPolygon(vertices []Vec2) *ConvexPolygon {
 	return p
 }
 
-func (p *ConvexPolygon) GetMommentOfInertia() float64 {
+func (p *ConvexPolygon) getMommentOfInertia() float64 {
 	// todo
 	return 5000
 }
@@ -126,6 +126,6 @@ func (rect *Rectangle) GetType() ShapeType {
 	return RectangleShape
 }
 
-func (r *Rectangle) GetMommentOfInertia() float64 {
+func (r *Rectangle) getMommentOfInertia() float64 {
 	return (0.083333) * (r.width*r.width + r.height*r.height)
 }

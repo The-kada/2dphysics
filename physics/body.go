@@ -41,7 +41,7 @@ func NewBody(position, velocity, acceleration, forces Vec2, mass, rotation, angu
 	body.Shape = shape
 	body.Forces = forces
 	body.Rotation = rotation
-	body.i = shape.GetMommentOfInertia() * mass
+	body.i = shape.getMommentOfInertia() * mass
 	if body.i != 0 {
 		body.invI = 1 / body.i
 	} else {
