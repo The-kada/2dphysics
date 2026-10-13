@@ -1,9 +1,9 @@
 package game
 
 import (
-	"astro/gameerrors"
 	"astro/physics"
 	"astro/util"
+	"errors"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
@@ -101,7 +101,7 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 func (g *Game) handleQuit() error {
 	terminated := ebiten.IsKeyPressed(ebiten.KeyEscape)
 	if terminated {
-		return gameerrors.GameExitedError
+		return errors.New("err")
 	}
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyR) {

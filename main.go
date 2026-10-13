@@ -2,9 +2,7 @@ package main
 
 import (
 	"astro/game"
-	"astro/gameerrors"
 	"astro/physics"
-	"errors"
 	"fmt"
 	"log"
 
@@ -21,7 +19,7 @@ func main() {
 	ebiten.SetWindowTitle(fmt.Sprintf("Astro %dx%d", screenWidth, screenHeight))
 
 	if err := ebiten.RunGame(NewGame()); err != nil {
-		if errors.Is(err, gameerrors.GameExitedError) {
+		if err != nil {
 			log.Println("Game exited!")
 			return
 		}
