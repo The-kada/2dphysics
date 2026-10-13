@@ -2,12 +2,12 @@ package physics
 
 import "errors"
 
-type VecN struct {
+type vecN struct {
 	elements []float64
 }
 
-func NewVecN(elements ...float64) *VecN {
-	vecN := &VecN{}
+func newVecN(elements ...float64) *vecN {
+	vecN := &vecN{}
 	for i := 0; i < len(elements); i++ {
 		vecN.elements = append(vecN.elements, elements[i])
 	}
@@ -15,12 +15,12 @@ func NewVecN(elements ...float64) *VecN {
 	return vecN
 }
 
-func (vecn *VecN) Add(v2 *VecN) (*VecN, error) {
+func (vecn *vecN) add(v2 *vecN) (*vecN, error) {
 	if len(v2.elements) != len(vecn.elements) {
 		return nil, errors.New("size mismatch")
 	}
 
-	newVec := &VecN{}
+	newVec := &vecN{}
 
 	for i := 0; i < len(vecn.elements); i++ {
 		newVec.elements = append(newVec.elements, vecn.elements[i]+v2.elements[i])
@@ -29,12 +29,12 @@ func (vecn *VecN) Add(v2 *VecN) (*VecN, error) {
 	return newVec, nil
 }
 
-func (vecn *VecN) Sub(v2 *VecN) (*VecN, error) {
+func (vecn *vecN) sub(v2 *vecN) (*vecN, error) {
 	if len(v2.elements) != len(vecn.elements) {
 		return nil, errors.New("size mismatch")
 	}
 
-	newVec := &VecN{}
+	newVec := &vecN{}
 
 	for i := 0; i < len(vecn.elements); i++ {
 		newVec.elements = append(newVec.elements, vecn.elements[i]-v2.elements[i])
@@ -43,9 +43,9 @@ func (vecn *VecN) Sub(v2 *VecN) (*VecN, error) {
 	return newVec, nil
 }
 
-func (vecn *VecN) Scale(n float64) *VecN {
+func (vecn *vecN) scale(n float64) *vecN {
 
-	newVec := &VecN{}
+	newVec := &vecN{}
 
 	for i := 0; i < len(vecn.elements); i++ {
 		newVec.elements = append(newVec.elements, vecn.elements[i]*n)
@@ -54,7 +54,7 @@ func (vecn *VecN) Scale(n float64) *VecN {
 	return newVec
 }
 
-func (vecn *VecN) Dot(v2 *VecN) (float64, error) {
+func (vecn *vecN) dot(v2 *vecN) (float64, error) {
 	if len(v2.elements) != len(vecn.elements) {
 		return 0, errors.New("size mismatch")
 	}
@@ -68,15 +68,15 @@ func (vecn *VecN) Dot(v2 *VecN) (float64, error) {
 	return sum, nil
 }
 
-func (vecn *VecN) At(index int) float64 {
+func (vecn *vecN) at(index int) float64 {
 	return vecn.elements[index]
 }
 
-func (vecn *VecN) Size() int {
+func (vecn *vecN) size() int {
 	return len(vecn.elements)
 }
 
-func (vecn *VecN) Zero() {
+func (vecn *vecN) zero() {
 	for i := 0; i < len(vecn.elements); i++ {
 		vecn.elements[i] = 0
 	}

@@ -1,4 +1,4 @@
-module astro
+module 2dphys
 
 go 1.24.3
 

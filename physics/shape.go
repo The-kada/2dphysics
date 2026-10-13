@@ -2,9 +2,6 @@ package physics
 
 import (
 	"math"
-
-	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
 type ShapeType string
@@ -123,19 +120,6 @@ func NewRectangle(width, height float64) *Rectangle {
 	)
 
 	return rectangle
-}
-
-func (rect *Rectangle) Draw(dst *ebiten.Image) {
-	var path vector.Path
-	path.MoveTo(float32(rect.WorldVertices[0][0]), float32(rect.WorldVertices[0][1]))
-	path.LineTo(float32(rect.WorldVertices[1][0]), float32(rect.WorldVertices[1][1]))
-	path.LineTo(float32(rect.WorldVertices[2][0]), float32(rect.WorldVertices[2][1]))
-	path.LineTo(float32(rect.WorldVertices[3][0]), float32(rect.WorldVertices[3][1]))
-	path.Close()
-
-	color := ebiten.ColorScale{}
-	color.Scale(0.2, 0.6, 1.0, 1.0)
-	vector.FillPath(dst, &path, &vector.FillOptions{}, &vector.DrawPathOptions{ColorScale: color})
 }
 
 func (rect *Rectangle) GetType() ShapeType {
