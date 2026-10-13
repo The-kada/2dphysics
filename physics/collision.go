@@ -175,12 +175,12 @@ func checkPolygonPolygonCollision(a *body, b *body) (bool, *ContactInfo) {
 		polygonB = &b.Shape.(*Rectangle).ConvexPolygon
 	}
 
-	sepAB, axisA, pointB := polygonA.FindMinSeperation(polygonB)
+	sepAB, axisA, pointB := polygonA.findMinSeperation(polygonB)
 	if sepAB >= 0 {
 		return false, nil
 	}
 
-	sepBA, axisB, pointA := polygonB.FindMinSeperation(polygonA)
+	sepBA, axisB, pointA := polygonB.findMinSeperation(polygonA)
 	if sepBA >= 0 {
 		return false, nil
 	}

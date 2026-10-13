@@ -39,7 +39,7 @@ type ConvexPolygon struct {
 	WorldVertices []Vec2
 }
 
-func (p *ConvexPolygon) FindMinSeperation(op *ConvexPolygon) (seperation float64, axis Vec2, point Vec2) {
+func (p *ConvexPolygon) findMinSeperation(op *ConvexPolygon) (seperation float64, axis Vec2, point Vec2) {
 	seperation = -math.MaxFloat64
 
 	for i := 0; i < len(p.WorldVertices); i++ {
