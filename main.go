@@ -4,8 +4,8 @@ package main
 	Example code to demonstrate physics capabilities
 */
 import (
-	"github.com/the-kada/2dphys/ebitendrawer"
-	"github.com/the-kada/2dphys/physics"
+	"github.com/the-kada/2dphysics/ebitendrawer"
+	"github.com/the-kada/2dphysics/physics"
 	"errors"
 	"fmt"
 	"log"

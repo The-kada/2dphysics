@@ -2,7 +2,7 @@
 package ebitendrawer
 
 import (
-	"github.com/the-kada/2dphys/physics"
+	"github.com/the-kada/2dphysics/physics"
 	"fmt"
 	"image/color"
 	"math"
