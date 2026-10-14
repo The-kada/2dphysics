@@ -4,7 +4,7 @@ import (
 	"math"
 )
 
-type body struct {
+type Body struct {
 	Postion             Vec2
 	velocity            Vec2
 	Acceleration        Vec2
@@ -22,8 +22,8 @@ type body struct {
 	restitution         float64
 }
 
-func NewBody(position, velocity, acceleration, forces Vec2, mass, rotation, angularVelocity, angularAcceleration, SumTorque, friciton, restitution float64, shape shape) *body {
-	var body body
+func NewBody(position, velocity, acceleration, forces Vec2, mass, rotation, angularVelocity, angularAcceleration, SumTorque, friciton, restitution float64, shape shape) *Body {
+	var body Body
 	body.Postion = position
 	body.velocity = velocity
 	body.Acceleration = acceleration
@@ -52,11 +52,11 @@ func NewBody(position, velocity, acceleration, forces Vec2, mass, rotation, angu
 
 }
 
-func (b *body) isStatic() bool {
+func (b *Body) isStatic() bool {
 	return b.invMass == 0
 }
 
-func (b *body) integrateAcceleration(tps float64) {
+func (b *Body) integrateAcceleration(tps float64) {
 	if b.isStatic() {
 		return
 	}
@@ -76,7 +76,7 @@ func (b *body) integrateAcceleration(tps float64) {
 	b.Forces[0], b.Forces[1] = 0, 0
 }
 
-func (b *body) integrateVelocity(tps float64) {
+func (b *Body) integrateVelocity(tps float64) {
 	if b.isStatic() {
 		return
 	}
@@ -89,7 +89,7 @@ func (b *body) integrateVelocity(tps float64) {
 	b.Rotation += (b.AngularVelocity * time)
 }
 
-func (b *body) worldSpaceToLocalSpace(point *Vec2) Vec2 {
+func (b *Body) worldSpaceToLocalSpace(point *Vec2) Vec2 {
 	translatedX := point[0] - b.Postion[0]
 	translatedY := point[1] - b.Postion[1]
 
@@ -99,12 +99,12 @@ func (b *body) worldSpaceToLocalSpace(point *Vec2) Vec2 {
 	return Vec2{rotatedX, rotatedY}
 }
 
-func (b *body) localToWorldSpace(point *Vec2) Vec2 {
+func (b *Body) localToWorldSpace(point *Vec2) Vec2 {
 	rotated := point.Rotate(b.Rotation)
 	return rotated.Add(&b.Postion)
 }
 
-func (b *body) applyImpulseLinear(impulse Vec2) {
+func (b *Body) applyImpulseLinear(impulse Vec2) {
 	if b.isStatic() {
 		return
 	}
@@ -113,14 +113,14 @@ func (b *body) applyImpulseLinear(impulse Vec2) {
 	b.velocity = b.velocity.Add(&x)
 }
 
-func (b *body) applyImpulseAngular(impulse float64) {
+func (b *Body) applyImpulseAngular(impulse float64) {
 	if b.isStatic() {
 		return
 	}
 	b.AngularVelocity += impulse * b.invI
 }
 
-func (b *body) applyImpulseAtPoint(impulse Vec2, radius Vec2) {
+func (b *Body) applyImpulseAtPoint(impulse Vec2, radius Vec2) {
 	if b.isStatic() {
 		return
 	}

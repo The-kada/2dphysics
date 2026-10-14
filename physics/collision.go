@@ -3,15 +3,15 @@ package physics
 import "math"
 
 type ContactInfo struct {
-	A      *body
-	B      *body
+	A      *Body
+	B      *Body
 	Start  Vec2
 	End    Vec2
 	Depth  float32
 	Normal Vec2
 }
 
-func isColliding(a *body, b *body) (bool, *ContactInfo) {
+func isColliding(a *Body, b *Body) (bool, *ContactInfo) {
 	isCircleCircle := a.Shape.GetType() == CircleShape && b.Shape.GetType() == CircleShape
 	isPolygonPolygon := (a.Shape.GetType() == ConvexPolygonShape || a.Shape.GetType() == RectangleShape) && (b.Shape.GetType() == ConvexPolygonShape || b.Shape.GetType() == RectangleShape)
 	isPolygonCircle := (a.Shape.GetType() == CircleShape && b.Shape.GetType() == RectangleShape || b.Shape.GetType() == ConvexPolygonShape) || (b.Shape.GetType() == CircleShape && a.Shape.GetType() == RectangleShape || a.Shape.GetType() == ConvexPolygonShape)
@@ -33,7 +33,7 @@ func isColliding(a *body, b *body) (bool, *ContactInfo) {
 
 }
 
-func checkCircleCircleCollision(a *body, b *body) (bool, *ContactInfo) {
+func checkCircleCircleCollision(a *Body, b *Body) (bool, *ContactInfo) {
 	vectorAlongCenters := b.Postion.Sub(&a.Postion)
 	distanceBetweenCircles := vectorAlongCenters.Magnitude()
 	aRadius := a.Shape.(*Circle).Radius
@@ -55,7 +55,7 @@ func checkCircleCircleCollision(a *body, b *body) (bool, *ContactInfo) {
 	return false, nil
 }
 
-func checkCirclePolygonCollision(a *body, b *body) (bool, *ContactInfo) {
+func checkCirclePolygonCollision(a *Body, b *Body) (bool, *ContactInfo) {
 
 	var contact ContactInfo
 	var polygon *ConvexPolygon
@@ -163,7 +163,7 @@ func checkCirclePolygonCollision(a *body, b *body) (bool, *ContactInfo) {
 
 }
 
-func checkPolygonPolygonCollision(a *body, b *body) (bool, *ContactInfo) {
+func checkPolygonPolygonCollision(a *Body, b *Body) (bool, *ContactInfo) {
 	var polygonA, polygonB *ConvexPolygon
 	var ok bool
 

@@ -6,8 +6,8 @@ import (
 )
 
 type constraint struct {
-	a      *body
-	b      *body
+	a      *Body
+	b      *Body
 	aPoint Vec2
 	bPoint Vec2
 }
@@ -46,7 +46,7 @@ type jointConstraint struct {
 	bias         float64
 }
 
-func NewJointConstraint(a, b *body, anchorPoint Vec2) *jointConstraint {
+func NewJointConstraint(a, b *Body, anchorPoint Vec2) *jointConstraint {
 	return &jointConstraint{
 		constraint: constraint{
 			a:      a,
@@ -154,7 +154,7 @@ type penetrationConstraint struct {
 	friction     float64
 }
 
-func NewPenetrationConstraint(a, b *body, aCollisionPoint, bCollisionPoint, normal Vec2, friction float64) *penetrationConstraint {
+func NewPenetrationConstraint(a, b *Body, aCollisionPoint, bCollisionPoint, normal Vec2, friction float64) *penetrationConstraint {
 	return &penetrationConstraint{
 		constraint: constraint{
 			a:      a,

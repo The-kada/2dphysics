@@ -1,12 +1,12 @@
 package physics
 
 type WorldPhysics struct {
-	Bodies      []*body
+	Bodies      []*Body
 	Contacts    []*ContactInfo
 	Constraints []Constraint
 }
 
-func (w *WorldPhysics) AddBody(body ...*body) {
+func (w *WorldPhysics) AddBody(body ...*Body) {
 	w.Bodies = append(w.Bodies, body...)
 }
 
