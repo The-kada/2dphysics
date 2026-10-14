@@ -1,4 +1,4 @@
-module 2dphys
+module github.com/the-kada/2dphys
 
 go 1.24.3
 

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"2dphys/ebitendrawer"
-	"2dphys/physics"
+	"github.com/the-kada/2dphys/ebitendrawer"
+	"github.com/the-kada/2dphys/physics"
 	"errors"
 	"fmt"
 	"log"
