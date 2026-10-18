@@ -3,7 +3,19 @@ package physics
 import (
 	"fmt"
 	"math"
+	"os"
+	"strconv"
 )
+
+var beta float64
+
+func init() {
+	b, err := strconv.ParseFloat(os.Getenv("BETA_FACTOR"), 32)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Beta not supplied or invalid err:%v using default of %f", err, 0.3)
+	}
+	beta = b
+}
 
 type constraint struct {
 	a      *Body
@@ -223,7 +235,6 @@ func (constraint *penetrationConstraint) preSolve(dt float64) {
 
 	diff := pb.Sub(&pa)
 	c := diff.Dot(&j1)
-	beta := 0.9
 
 	va := constraint.a.velocity.Add(&Vec2{-constraint.a.AngularVelocity * ra[1], constraint.a.AngularVelocity * ra[0]})
 	vb := constraint.b.velocity.Add(&Vec2{-constraint.b.AngularVelocity * rb[1], constraint.b.AngularVelocity * rb[0]})
