@@ -23,8 +23,8 @@ func (w *WorldPhysics) UpdatePhysics(deltaTime float64) {
 
 	for i := 0; i < len(w.Bodies); i++ {
 		for j := i + 1; j < len(w.Bodies); j++ {
-			if colliding, contact := isColliding(w.Bodies[i], w.Bodies[j]); colliding {
-				w.Contacts = append(w.Contacts, contact)
+			if colliding, contacts := isColliding(w.Bodies[i], w.Bodies[j]); colliding {
+				w.Contacts = append(w.Contacts, contacts...)
 			}
 		}
 	}

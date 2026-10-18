@@ -223,11 +223,10 @@ func (constraint *penetrationConstraint) preSolve(dt float64) {
 
 	diff := pb.Sub(&pa)
 	c := diff.Dot(&j1)
-	beta := 0.2
-	c = math.Min(0.0, 0.01+c)
+	beta := 1.0
 
-	va := constraint.a.velocity.Add(&Vec2{-constraint.a.AngularVelocity * ra[1], -constraint.a.AngularVelocity * ra[0]})
-	vb := constraint.a.velocity.Add(&Vec2{-constraint.b.AngularVelocity * rb[1], -constraint.b.AngularVelocity * rb[0]})
+	va := constraint.a.velocity.Add(&Vec2{-constraint.a.AngularVelocity * ra[1], constraint.a.AngularVelocity * ra[0]})
+	vb := constraint.b.velocity.Add(&Vec2{-constraint.b.AngularVelocity * rb[1], constraint.b.AngularVelocity * rb[0]})
 
 	vRelDotNormal := va.Sub(&vb).Dot(&n)
 	restitution := math.Min(constraint.a.restitution, constraint.b.restitution)

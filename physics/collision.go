@@ -11,7 +11,7 @@ type ContactInfo struct {
 	Normal Vec2
 }
 
-func isColliding(a *Body, b *Body) (bool, *ContactInfo) {
+func isColliding(a *Body, b *Body) (bool, []*ContactInfo) {
 	isCircleCircle := a.Shape.GetType() == CircleShape && b.Shape.GetType() == CircleShape
 	isPolygonPolygon := (a.Shape.GetType() == ConvexPolygonShape || a.Shape.GetType() == RectangleShape) && (b.Shape.GetType() == ConvexPolygonShape || b.Shape.GetType() == RectangleShape)
 	isPolygonCircle := (a.Shape.GetType() == CircleShape && b.Shape.GetType() == RectangleShape || b.Shape.GetType() == ConvexPolygonShape) || (b.Shape.GetType() == CircleShape && a.Shape.GetType() == RectangleShape || a.Shape.GetType() == ConvexPolygonShape)
@@ -33,7 +33,7 @@ func isColliding(a *Body, b *Body) (bool, *ContactInfo) {
 
 }
 
-func checkCircleCircleCollision(a *Body, b *Body) (bool, *ContactInfo) {
+func checkCircleCircleCollision(a *Body, b *Body) (bool, []*ContactInfo) {
 	vectorAlongCenters := b.Postion.Sub(&a.Postion)
 	distanceBetweenCircles := vectorAlongCenters.Magnitude()
 	aRadius := a.Shape.(*Circle).Radius
@@ -49,13 +49,13 @@ func checkCircleCircleCollision(a *Body, b *Body) (bool, *ContactInfo) {
 		end := a.Postion.Add(&aToB)
 		depth := end.Sub(&start).Magnitude()
 
-		return true, &ContactInfo{a, b, start, end, float32(depth), normalAlongCenters}
+		return true, []*ContactInfo{{a, b, start, end, float32(depth), normalAlongCenters}}
 	}
 
 	return false, nil
 }
 
-func checkCirclePolygonCollision(a *Body, b *Body) (bool, *ContactInfo) {
+func checkCirclePolygonCollision(a *Body, b *Body) (bool, []*ContactInfo) {
 
 	var contact ContactInfo
 	var polygon *ConvexPolygon
@@ -115,7 +115,7 @@ func checkCirclePolygonCollision(a *Body, b *Body) (bool, *ContactInfo) {
 	}
 
 	if !isOutside {
-		return true, &contact
+		return true, []*ContactInfo{&contact}
 	}
 
 	currentVertexVectorCircle := contact.B.Postion.Sub(&currentVertex)
@@ -135,7 +135,7 @@ func checkCirclePolygonCollision(a *Body, b *Body) (bool, *ContactInfo) {
 		contact.Depth = float32(circle.Radius) - float32(currentVertexVectorCircle.Magnitude())
 		depthScaledNormal := contact.Normal.Scale(float64(contact.Depth))
 		contact.End = contact.Start.Add(&depthScaledNormal)
-		return true, &contact
+		return true, []*ContactInfo{&contact}
 
 	} else if nextVertexVectorCircle.Dot(&nextVertexToCurrVertexVector) < 0 {
 		if nextVertexVectorCircle.Magnitude() > circle.Radius {
@@ -147,7 +147,7 @@ func checkCirclePolygonCollision(a *Body, b *Body) (bool, *ContactInfo) {
 		contact.Depth = float32(circle.Radius) - float32(nextVertexVectorCircle.Magnitude())
 		depthScaledNormal := contact.Normal.Scale(float64(contact.Depth))
 		contact.End = contact.Start.Add(&depthScaledNormal)
-		return true, &contact
+		return true, []*ContactInfo{&contact}
 	} else if distanceCircleEdge < circle.Radius {
 
 		contact.Normal = nextVertex.Sub(&currentVertex).Normal()
@@ -156,14 +156,14 @@ func checkCirclePolygonCollision(a *Body, b *Body) (bool, *ContactInfo) {
 		contact.Depth = float32(circle.Radius) - float32(distanceCircleEdge)
 		depthScaledNormal := contact.Normal.Scale(float64(contact.Depth))
 		contact.End = contact.Start.Add(&depthScaledNormal)
-		return true, &contact
+		return true, []*ContactInfo{&contact}
 	}
 
 	return false, nil
 
 }
 
-func checkPolygonPolygonCollision(a *Body, b *Body) (bool, *ContactInfo) {
+func checkPolygonPolygonCollision(a *Body, b *Body) (bool, []*ContactInfo) {
 	var polygonA, polygonB *ConvexPolygon
 	var ok bool
 
@@ -175,34 +175,99 @@ func checkPolygonPolygonCollision(a *Body, b *Body) (bool, *ContactInfo) {
 		polygonB = &b.Shape.(*Rectangle).ConvexPolygon
 	}
 
-	sepAB, axisA, pointB := polygonA.findMinSeperation(polygonB)
+	sepAB, aRefIdx := polygonA.findMinSeperation(polygonB)
 	if sepAB >= 0 {
 		return false, nil
 	}
 
-	sepBA, axisB, pointA := polygonB.findMinSeperation(polygonA)
+	sepBA, bRefIdx := polygonB.findMinSeperation(polygonA)
 	if sepBA >= 0 {
 		return false, nil
 	}
 
-	contactInfo := &ContactInfo{}
-	contactInfo.A = a
-	contactInfo.B = b
+	// Choose which polygon is the reference (least-negative separation = more face-on)
+	// and which is incident.
+	var referenceShape, incidentShape *ConvexPolygon
+	var indexReferenceEdge int
+	referenceIsA := sepAB > sepBA
 
-	if sepAB > sepBA {
-		axisANormal := axisA.Normal()
-		t := axisANormal.Scale(-float64(sepAB))
-		contactInfo.Start = pointB
-		contactInfo.End = pointB.Add(&t)
-		contactInfo.Depth = -float32(sepAB)
-		contactInfo.Normal = axisANormal
+	if referenceIsA {
+		referenceShape = polygonA
+		incidentShape = polygonB
+		indexReferenceEdge = aRefIdx
 	} else {
-		axisBNormal := axisB.Normal()
-		t := axisBNormal.Scale(-float64(sepBA))
-		contactInfo.Start = pointA
-		contactInfo.End = pointA.Add(&t)
-		contactInfo.Depth = -float32(sepBA)
-		contactInfo.Normal = axisBNormal.Scale(-1)
+		referenceShape = polygonB
+		incidentShape = polygonA
+		indexReferenceEdge = bRefIdx
 	}
-	return true, contactInfo
+
+	referenceEdge := referenceShape.edgeAtIndex(indexReferenceEdge)
+	referenceNormal := referenceEdge.Normal()
+
+	// Find the incident edge: the edge on the incident polygon most anti-parallel
+	// to the reference edge's normal.
+	incidentIdx := incidentShape.findIncidentEdge(referenceNormal)
+	incidentNextIdx := (incidentIdx + 1) % len(incidentShape.WorldVertices)
+	v0 := incidentShape.WorldVertices[incidentIdx]
+	v1 := incidentShape.WorldVertices[incidentNextIdx]
+
+	/////////////////////////////////////
+	// Vclipping
+	/////////////////////////////////////
+	// Clip the incident edge against every edge of the reference polygon except
+	// the reference edge itself.
+	contactPoints := []Vec2{v0, v1}
+	for i := 0; i < len(referenceShape.WorldVertices); i++ {
+		if i == indexReferenceEdge {
+			continue
+		}
+		c0 := referenceShape.WorldVertices[i]
+		c1 := referenceShape.WorldVertices[(i+1)%len(referenceShape.WorldVertices)]
+		contactPoints = clipSegmentToLine(contactPoints, c0, c1)
+		if len(contactPoints) < 2 {
+			break
+		}
+	}
+
+	// The reference vertex is the start of the reference edge; separation is
+	// measured from it along the reference normal.
+	vref := referenceShape.WorldVertices[indexReferenceEdge]
+	var contacts []*ContactInfo
+
+	for _, vclip := range contactPoints {
+		separation := vclip.Sub(&vref).Dot(&referenceNormal)
+		if separation > 0 {
+			continue // point is outside the reference face — discard
+		}
+
+		// start = contact point on the incident polygon (inside reference)
+		// end   = corresponding point projected onto the reference face
+		// Convention matches the rest of the codebase: start on B, end on A,
+		// normal from A toward B.
+		start := vclip
+		pushback := referenceNormal.Scale(-separation)
+		end := vclip.Add(&pushback)
+		normal := referenceNormal
+
+		if !referenceIsA {
+			// Reference shape was B; flip so the normal points from a toward b
+			// and start/end follow the expected convention.
+			start, end = end, start
+			normal = normal.Scale(-1)
+		}
+
+		contacts = append(contacts, &ContactInfo{
+			A:      a,
+			B:      b,
+			Start:  start,
+			End:    end,
+			Depth:  float32(-separation),
+			Normal: normal,
+		})
+	}
+
+	if len(contacts) == 0 {
+		return false, nil
+	}
+	return true, contacts
 }
