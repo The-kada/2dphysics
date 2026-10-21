@@ -4,6 +4,7 @@ type WorldPhysics struct {
 	Bodies      []*Body
 	Contacts    []*ContactInfo
 	Constraints []Constraint
+	BodyForces  map[*Body][]Vec2
 }
 
 func (w *WorldPhysics) AddBody(body ...*Body) {
@@ -37,8 +38,13 @@ func (w *WorldPhysics) UpdatePhysics(deltaTime float64) {
 	}
 
 	for _, body := range w.Bodies {
-		weight := Vec2{0, body.Mass * 9.8 * 1 * 50}
-		body.Forces = body.Forces.Add(&weight)
+		if forces, present := w.BodyForces[body]; present {
+			for _, force := range forces {
+				f := force
+				body.Forces = body.Forces.Add(&f)
+			}
+		}
+
 	}
 
 	for _, body := range w.Bodies {
